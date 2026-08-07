@@ -1,0 +1,16 @@
+<ng-container *transloco="let t; read: 'settings.support.feedback'">
+  <ion-header class="ion-no-border floating-header">
+    <div class="nav-inner">
+      <ion-back-button />
+      <span class="nav-title">{{ t('title') }}</span>
+    </div>
+  </ion-header>
+  <ion-content [fullscreen]="true">
+    <ion-list>
+      <ion-item href="mailto:research@rylo.com" target="_blank">
+        <ion-label>{{ 'settings.support.feedback.send' | transloco }}</ion-label>
+      </ion-item>
+      <!-- TODO rate on app/play store depending on the platform -->
+    </ion-list>
+  </ion-content>
+</ng-container>

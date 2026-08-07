@@ -1,0 +1,168 @@
+name: Client
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    concurrency:
+      group: ${{ github.ref }}-client
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Apply BASE_PATH to static files
+        run: npm run generate:base-path
+
+      - name: Create terms and conditions
+        run: npm run generate:terms
+
+      - name: Create privacy page
+        run: npm run generate:privacy
+
+      - name: Generate Licenses File
+        run: npm run generate:licenses
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Test code
+        run: npm run test:ci
+
+      # - name: Coveralls
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate a cache busting version
+        run: node tools/generate-build-version.js
+
+      - name: Build project
+        run: npm run build
+
+      - name: Generate Sitemap
+        run: npm run generate:sitemap
+
+      - name: Install Docs Dependencies
+        working-directory: docs
+        run: npm install
+
+      - name: Generate Docs
+        run: npm run generate:docs
+
+      - name: Move .well-known to root
+        working-directory: dist/sign-translate/browser/
+        run: mv assets/.well-known .well-known
+
+      - name: Copy index.html to 404.html
+        run: cp dist/sign-translate/browser/index.html dist/sign-translate/browser/404.html
+
+      - name: Add .nojekyll
+        run: touch dist/sign-translate/browser/.nojekyll
+
+      - name: Zip dist
+        run: zip -r dist/sign-translate/browser.zip dist/sign-translate/browser/
+
+      - name: Archive dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-dist
+          path: dist/sign-translate/browser.zip
+          retention-days: 1
+
+  lighthouse:
+    name: Lighthouse Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download built dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+          path: .
+
+      - name: Unzip dist
+        run: unzip browser.zip
+
+      - name: Remove original html file from before prerendering
+        run: rm -f dist/sign-translate/browser/index.original.html || true
+
+      - name: Stage dist under BASE_PATH for Lighthouse
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_PATH=$(node -p "require('./base-path.json').basePath")
+          STRIPPED=${BASE_PATH#/}; STRIPPED=${STRIPPED%/}
+          if [ -n "$STRIPPED" ]; then
+            DIST=dist/sign-translate/browser
+            STAGE=$(mktemp -d)
+            shopt -s dotglob
+            mv "$DIST"/* "$STAGE/"
+            mkdir -p "$DIST/$STRIPPED"
+            mv "$STAGE"/* "$DIST/$STRIPPED/"
+            rmdir "$STAGE"
+          fi
+
+      - name: Run Lighthouse against a static dist dir
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: .github/workflows/lighthouse/lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download built dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+          path: .
+
+      - name: Unzip dist
+        run: unzip browser.zip
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/sign-translate/browser
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

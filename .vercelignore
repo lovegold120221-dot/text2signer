@@ -1,0 +1,11 @@
+# Keep the Vercel build context small — these are not needed to build the web app.
+node_modules
+dist
+android
+artifacts
+coverage
+docs
+tools
+.github
+.angular
+*.log

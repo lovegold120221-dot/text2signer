@@ -1,0 +1,5 @@
+.angular
+dist
+coverage
+tools/cache
+out-tsc/

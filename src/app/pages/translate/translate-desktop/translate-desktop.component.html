@@ -1,0 +1,22 @@
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <app-drop-pose-file>
+      <div id="translation-card">
+        <div id="card-header">
+          <app-language-selectors />
+          <app-sign-writing-toggle />
+        </div>
+
+        <div id="content">
+          @if (spokenToSigned) {
+            <!-- Spoken to sign requires a text input and video output -->
+            <app-spoken-to-signed />
+          } @else {
+            <!-- Sign to spoken requires a video input and text output -->
+            <app-signed-to-spoken />
+          }
+        </div>
+      </div>
+    </app-drop-pose-file>
+  </div>
+</ion-content>

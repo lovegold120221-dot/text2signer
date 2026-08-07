@@ -1,0 +1,17 @@
+<ng-container *transloco="let t; read: 'settings.other.appearance'">
+  <ion-header class="ion-no-border floating-header">
+    <div class="nav-inner">
+      <ion-back-button />
+      <span class="nav-title">{{ t('title') }}</span>
+    </div>
+  </ion-header>
+  <ion-content [fullscreen]="true">
+    <app-settings-appearance-images />
+
+    <p>
+      <u>Note</u>: Supporting custom photos is possible.<br />
+      However, not a current priority. <br />
+      <a href="https://github.com/sign/translate/issues/33" target="_blank">GitHub Issue</a>.
+    </p>
+  </ion-content>
+</ng-container>

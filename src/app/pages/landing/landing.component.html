@@ -1,0 +1,56 @@
+@if (isMobile.matches) {
+  <ion-menu contentId="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-list-header lines="full">
+          <ion-label>Pages</ion-label>
+        </ion-list-header>
+        <ion-menu-toggle>
+          @for (page of pages; track page.key) {
+            <ion-item [routerLink]="page.route" queryParamsHandling="preserve">
+              <ion-label>{{ 'landing.' + page.key + '.title' | transloco }}</ion-label>
+            </ion-item>
+          }
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+    <ion-footer>
+      <ion-button routerLink="/" color="primary" queryParamsHandling="preserve" fill="clear">
+        {{ 'landing.try' | transloco }}
+      </ion-button>
+    </ion-footer>
+  </ion-menu>
+}
+
+<ion-header class="ion-no-border floating-header">
+  <nav class="nav-inner">
+    <app-logo />
+    @if (!isMobile.matches) {
+      <div class="nav-right">
+        <div class="nav-links">
+          @for (page of pages; track page.key) {
+            <a [routerLink]="page.route" queryParamsHandling="preserve" class="nav-link">
+              {{ 'landing.' + page.key + '.title' | transloco }}
+            </a>
+          }
+        </div>
+        <a routerLink="/" queryParamsHandling="preserve" class="nav-cta">
+          {{ 'landing.try' | transloco }}
+          <ion-icon name="arrow-forward" />
+        </a>
+      </div>
+    } @else {
+      <ion-menu-button auto-hide="true" />
+    }
+  </nav>
+</ion-header>
+
+<ion-content [fullscreen]="true" id="main-content">
+  <router-outlet />
+  <app-landing-footer />
+</ion-content>

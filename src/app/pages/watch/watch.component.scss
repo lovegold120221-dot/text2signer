@@ -1,0 +1,194 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #fafafa;
+  color: #1a1a1a;
+
+  @media (prefers-color-scheme: dark) {
+    background: #0a0a0a;
+    color: #eee;
+  }
+}
+
+.watch-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.watch-header {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+
+  app-logo {
+    display: block;
+    max-width: 160px;
+  }
+}
+
+.watch-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.research-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  text-align: center;
+  background: rgba(255, 139, 43, 0.08);
+  border: 1px solid rgba(255, 139, 43, 0.3);
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 18px;
+    color: #ff8b2b;
+    flex-shrink: 0;
+  }
+}
+
+.video-container {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+
+  app-signed-language-output {
+    display: block;
+    width: 100%;
+  }
+}
+
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+  color: #999;
+}
+
+.watch-text {
+  font-size: 1.1rem;
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.cta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  padding-top: 8px;
+}
+
+.cta-button {
+  display: block;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &.primary {
+    background: #ff8b2b;
+    color: white;
+  }
+
+  &.secondary {
+    background: transparent;
+    color: #ff8b2b;
+    border: 1.5px solid #ff8b2b;
+  }
+}
+
+.app-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f0ebe8;
+  border-radius: 12px;
+  margin-bottom: 8px;
+
+  @media (prefers-color-scheme: dark) {
+    background: #2a2220;
+  }
+}
+
+.app-banner-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  @media (prefers-color-scheme: dark) {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+.app-banner-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+
+  strong {
+    font-size: 0.9rem;
+  }
+
+  span {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+}
+
+.app-banner-button {
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: #ff8b2b;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.app-banner-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  color: inherit;
+}
+
+.watch-footer {
+  padding: 24px 0 8px;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.5;
+
+  a {
+    color: #ff8b2b;
+    text-decoration: none;
+  }
+}

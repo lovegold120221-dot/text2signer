@@ -1,0 +1,17 @@
+<ng-container *transloco="let t; read: 'settings.support.about'">
+  <ion-header class="ion-no-border floating-header">
+    <div class="nav-inner">
+      <ion-back-button />
+      <span class="nav-title">{{ t('title') }}</span>
+    </div>
+  </ion-header>
+  <ion-content [fullscreen]="true">
+    <ion-list>
+      @for (page of legalPages; track page) {
+        <ion-item [routerLink]="['/legal', page]" queryParamsHandling="preserve">
+          <ion-label>{{ 'legal.' + page + '.title' | transloco }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  </ion-content>
+</ng-container>

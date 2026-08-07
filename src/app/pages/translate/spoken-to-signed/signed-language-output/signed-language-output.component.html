@@ -1,0 +1,106 @@
+@if (translate$ | async; as viewerState) {
+  @if (poseViewerSetting$ | async; as poseViewerSetting) {
+    @for (job of visibleJobs(viewerState); track job.id) {
+      @if (poseViewerSetting === 'pose') {
+        <app-skeleton-pose-viewer
+          [class.standby-viewer]="job.id !== viewerState.activeSigningJob?.id"
+          [src]="job.poseUrl"
+          [jobId]="job.id"
+          [standby]="job.id !== viewerState.activeSigningJob?.id" />
+      } @else if (poseViewerSetting === 'person') {
+        <app-human-pose-viewer
+          [class.standby-viewer]="job.id !== viewerState.activeSigningJob?.id"
+          [src]="job.poseUrl"
+          [jobId]="job.id"
+          [standby]="job.id !== viewerState.activeSigningJob?.id" />
+      } @else if (poseViewerSetting === 'avatar') {
+        <app-avatar-pose-viewer
+          [class.standby-viewer]="job.id !== viewerState.activeSigningJob?.id"
+          [src]="job.poseUrl"
+          [jobId]="job.id"
+          [standby]="job.id !== viewerState.activeSigningJob?.id" />
+      }
+    }
+  }
+}
+@if (isLoading) {
+  <div class="loading-placeholder">
+    <div class="loading-pulse"></div>
+  </div>
+}
+
+@if (translate$ | async; as state) {
+  @if (state.activeSigningJob || state.signingQueue.length || state.signingHistory.length) {
+    <div class="queue-controls" aria-live="polite">
+      <span class="queue-status">
+        @if (state.activeSigningJob) {
+          Signing now: {{ state.activeSigningJob.sourceText }}
+          @if (nextBufferedJob(state); as nextJob) {
+            @if (nextJob.status === 'prepared') {
+              · Ready next: {{ nextJob.sourceText }}
+            } @else {
+              · Preparing next: {{ nextJob.sourceText }}
+            }
+          }
+        } @else if (state.queuePaused) {
+          Signing paused
+        } @else if (state.signingQueue.length) {
+          Preparing next sentence
+        } @else {
+          {{ state.signingHistory.length }} completed
+        }
+      </span>
+      @if (state.queuePaused) {
+        <ion-button fill="clear" size="small" aria-label="Resume signing" (click)="resumeQueue()">
+          <ion-icon name="play-outline" slot="icon-only" />
+        </ion-button>
+      } @else {
+        <ion-button fill="clear" size="small" aria-label="Stop signing" (click)="stopQueue()">
+          <ion-icon name="pause-outline" slot="icon-only" />
+        </ion-button>
+      }
+      <ion-button fill="clear" size="small" color="danger" aria-label="Clear signing queue" (click)="clearQueue()">
+        <ion-icon name="trash-outline" slot="icon-only" />
+      </ion-button>
+    </div>
+  }
+}
+@if (frameCache.encoding) {
+  <div class="encode-progress" [style.width.%]="frameCache.progress * 100"></div>
+}
+@if (signedLanguageReady || frameCache.encoding) {
+  <div class="actions-row">
+    <ion-button
+      class="action-button"
+      fill="solid"
+      shape="round"
+      color="primary"
+      [disabled]="!signedLanguageReady"
+      (click)="downloadTranslation()"
+      [attr.aria-label]="'translate.spoken-to-signed.actions.download' | transloco"
+      [matTooltip]="'translate.spoken-to-signed.actions.download' | transloco"
+      [matTooltipPosition]="'above'">
+      <ion-icon name="download-outline" slot="icon-only" />
+    </ion-button>
+    <ion-button
+      class="action-button"
+      fill="solid"
+      shape="round"
+      color="primary"
+      [disabled]="!signedLanguageReady"
+      (click)="shareTranslation()"
+      [attr.aria-label]="'translate.spoken-to-signed.actions.share' | transloco"
+      [matTooltip]="'translate.spoken-to-signed.actions.share' | transloco"
+      [matTooltipPosition]="'above'">
+      @if (isMobile) {
+        <ion-icon ios="share-outline" md="share-social-outline" slot="icon-only" />
+      } @else {
+        <ion-icon name="link-outline" slot="icon-only" />
+      }
+    </ion-button>
+  </div>
+}
+
+@if (shareDialogUrl) {
+  <app-share-dialog [url]="shareDialogUrl" (closed)="shareDialogUrl = null" />
+}

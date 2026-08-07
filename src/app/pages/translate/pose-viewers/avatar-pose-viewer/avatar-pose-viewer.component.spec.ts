@@ -1,0 +1,43 @@
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {axe, toHaveNoViolations} from 'jasmine-axe';
+import {AvatarPoseViewerComponent} from './avatar-pose-viewer.component';
+import {SettingsState} from '../../../../modules/settings/settings.state';
+import {ngxsConfig} from '../../../../app.config';
+import {provideStore} from '@ngxs/store';
+
+const hasWebGL = (() => {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(canvas.getContext('webgl') || canvas.getContext('webgl2'));
+  } catch {
+    return false;
+  }
+})();
+
+(hasWebGL ? describe : xdescribe)('AvatarPoseViewerComponent', () => {
+  let component: AvatarPoseViewerComponent;
+  let fixture: ComponentFixture<AvatarPoseViewerComponent>;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AvatarPoseViewerComponent],
+      providers: [provideStore([SettingsState], ngxsConfig)],
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AvatarPoseViewerComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+    expect(component.playbackRate).toBe(1.2);
+  });
+
+  it('should pass accessibility test', async () => {
+    jasmine.addMatchers(toHaveNoViolations);
+    const a11y = await axe(fixture.nativeElement);
+    expect(a11y).toHaveNoViolations();
+  });
+});

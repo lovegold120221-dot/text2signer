@@ -1,0 +1,14 @@
+<ion-content [fullscreen]="true">
+  @if (spokenToSigned) {
+    <app-signed-language-output />
+  } @else {
+    <app-video [displayControls]="false" [displayFps]="false" />
+  }
+
+  <!-- Input kept within the main content -->
+  @if (spokenToSigned) {
+    <app-spoken-language-input [isMobile]="true" />
+  } @else {
+    <app-signed-language-input />
+  }
+</ion-content>
